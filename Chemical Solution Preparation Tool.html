@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Chemical Solution Calculator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            /* Indigo 600 */
+            --primary-hover: #4338CA;
+            /* Indigo 700 */
+            --secondary: #10B981;
+            /* Emerald 500 */
+            --secondary-hover: #059669;
+            /* Emerald 600 */
+            --danger: #EF4444;
+            /* Red 500 */
+            --danger-hover: #DC2626;
+            /* Red 600 */
+            --bg-gradient-1: #c3cfe2;
+            --bg-gradient-2: #f5f7fa;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --text-dark: #1E293B;
+            /* Slate 800 */
+            --text-muted: #64748B;
+            /* Slate 500 */
+            --input-border: #CBD5E1;
+            /* Slate 300 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-2) 0%, var(--bg-gradient-1) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-dark);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* ===== Tabs Navigation ===== */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 12px 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            background: var(--glass-bg);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.02);
+            z-index: 10;
+        }
+
+        /* Responsive Tabs */
+        @media (max-width: 600px) {
+            .tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* ===== Tab Content ===== */
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            background: #fff;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .form-group {
+            flex: 1;
+        }
+
+        /* ===== Info Collapsible Panel ===== */
+        .info-panel-wrap {
+            margin-bottom: 20px;
+        }
+
+        .info-btn {
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            padding: 10px 15px;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .info-btn:hover {
+            background: rgba(79, 70, 229, 0.15);
+        }
+
+        .info-btn svg {
+            transition: transform 0.3s ease;
+        }
+
+        .info-btn.active svg {
+            transform: rotate(180deg);
+        }
+
+        .info-content {
+            background: rgba(255, 255, 255, 0.6);
+            border-left: 3px solid var(--primary);
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            border-radius: 0 0 8px 8px;
+            line-height: 1.5;
+        }
+
+        .info-content.show {
+            padding: 15px;
+            max-height: 200px;
+        }
+
+        .info-panel {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        /* ===== Buttons ===== */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ===== Result Box ===== */
+        .result-box {
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .result-box h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-box p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .result-box .highlight {
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(79, 70, 229, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .procedure-list {
+            margin-top: 15px;
+            padding-left: 20px;
+            line-height: 1.6;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        .procedure-list li {
+            margin-bottom: 6px;
+        }
+
+        .unit-toggle {
+            display: flex;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .unit-toggle label {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: var(--text-muted);
+        }
+
+        .unit-toggle input {
+            display: none;
+        }
+
+        .unit-toggle input:checked+label {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .input-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .btn {
+                flex: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+                border-radius: 0;
+            }
+
+            .tabs,
+            .button-group,
+            header .subtitle {
+                display: none !important;
+            }
+
+            .tab-content {
+                display: none;
+                padding: 0;
+                animation: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            .result-box {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Chemical Solution Preparation Tool</h1>
+            <div class="subtitle">Comprehensive tools for standard laboratory preparations (Molar & Normal)</div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'molar-solid')">1. Solid to Solution</button>
+            <button class="tab-btn" onclick="openTab(event, 'conc-liquid')">2. Conc. Acid/Base</button>
+            <button class="tab-btn" onclick="openTab(event, 'dilution')">3. Dilution (M1V1)</button>
+            <button class="tab-btn" onclick="openTab(event, 'calc-molarity')">4. Find Target Conc.</button>
+            <button class="tab-btn" onclick="openTab(event, 'percentage')">5. % w/v & % v/v</button>
+            <button class="tab-btn" onclick="openTab(event, 'ppm')">6. ppm / ppb</button>
+        </div>
+
+        <!-- 1. Molar/Normal from Solid -->
+        <div id="molar-solid" class="tab-content active">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> You need to prepare a solution of known Molarity (M) or Normality (N) by
+                    dissolving a pure solid powder/crystal (like NaOH or primary standards like KHP) into a precise
+                    volume of water. It calculates the necessary mass (in grams) you need to weigh on a balance.
+                </div>
+            </div>
+            <form id="molarSolidForm">
+                <div class="form-group">
+                    <label>Select Solid Chemical (Common Primary Standards & Salts)</label>
+                    <select id="molarSolidChemical">
+                        <option value="">-- Choose or Enter Custom MA --</option>
+                        <option value="NaOH" data-mw="40.00">Sodium Hydroxide (NaOH) - 40.00 g/mol</option>
+                        <option value="KOH" data-mw="56.11">Potassium Hydroxide (KOH) - 56.11 g/mol</option>
+                        <option value="NaCl" data-mw="58.44">Sodium Chloride (NaCl) - 58.44 g/mol</option>
+                        <option value="KCl" data-mw="74.55">Potassium Chloride (KCl) - 74.55 g/mol</option>
+                        <option value="Na2CO3" data-mw="105.99">Sodium Carbonate (Na₂CO₃) - 105.99 g/mol (Primary Std)
+                        </option>
+                        <option value="NaHCO3" data-mw="84.01">Sodium Bicarbonate (NaHCO₃) - 84.01 g/mol</option>
+                        <option value="KHP" data-mw="204.22">Potassium Hydrogen Phthalate (KHP) - 204.22 g/mol (Primary
+                            Std)</option>
+                        <option value="KMnO4" data-mw="158.03">Potassium Permanganate (KMnO₄) - 158.03 g/mol</option>
+                        <option value="K2Cr2O7" data-mw="294.18">Potassium Dichromate (K₂Cr₂O₇) - 294.18 g/mol (Primary
+                            Std)</option>
+                        <option value="Na2C2O4" data-mw="134.00">Sodium Oxalate (Na₂C₂O₄) - 134.00 g/mol (Primary Std)
+                        </option>
+                        <option value="Na2S2O3" data-mw="158.11">Sodium Thiosulfate (Na₂S₂O₃) - 158.11 g/mol</option>
+                        <option value="CuSO4_5H2O" data-mw="249.68">Copper(II) Sulfate Pentahydrate - 249.68 g/mol
+                        </option>
+                        <option value="EDTA_Na2" data-mw="372.24">EDTA Disodium Salt - 372.24 g/mol</option>
+                        <option value="Glucose" data-mw="180.16">Glucose (C₆H₁₂O₆) - 180.16 g/mol</option>
+                        <option value="Sucrose" data-mw="342.30">Sucrose (C₁₂H₂₂O₁₁) - 342.30 g/mol</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Molar Mass (MA / MW) (g/mol)</label>
+                    <input type="number" step="any" id="molarSolidMW"
+                        placeholder="e.g., 40.00 (Autofills from dropdown)">
+                </div>
+
+                <div class="unit-toggle">
+                    <input type="radio" id="solidUnitM" name="solidUnit" value="M" checked
+                        onchange="toggleSolidEq(false)">
+                    <label for="solidUnitM">Molarity (M)</label>
+                    <input type="radio" id="solidUnitN" name="solidUnit" value="N" onchange="toggleSolidEq(true)">
+                    <label for="solidUnitN">Normality (N) - Titrations</label>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label id="molarSolidConcLabel">Desired Molarity (M)</label>
+                        <input type="number" step="any" id="molarSolidConc" placeholder="e.g., 0.1">
+                    </div>
+                    <div class="form-group" id="solidEqGroup" style="display:none;">
+                        <label>Equivalence Factor (n)</label>
+                        <input type="number" step="any" id="molarSolidEq" value="1"
+                            placeholder="Valence / e- transferred">
+                    </div>
+                    <div class="form-group">
+                        <label>Final Volume (mL)</label>
+                        <input type="number" step="any" id="molarSolidVol" placeholder="e.g., 250">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcMolarSolid()">Calculate Mass</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('molarSolidForm', 'molarSolidResult')">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="molarSolidResult"></div>
+        </div>
+
+        <!-- 2. Concentrated Acid/Base -->
+        <div id="conc-liquid" class="tab-content">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> You are opening a fresh bottle of a concentrated liquid reagent (like 37%
+                    HCl or 98% H₂SO₄) and need to prepare a diluted solution (e.g. 0.1 M) from it. The tool
+                    automatically analyzes the bottle's Density and percentage to find the exact Stock Molarity, then
+                    tells you how many milliliters to pipette.
+                </div>
+            </div>
+            <form id="concLiquidForm">
+                <div class="info-panel" id="concInfoMsg" style="display:none;">
+                    Stock Concentration: <strong id="concLiveStockM">0.00 M</strong> <span id="concLiveStockN"
+                        style="display:none"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Concentrated Stock (Common Lab Reagents)</label>
+                    <select id="concLiquidChemical">
+                        <option value="">-- Custom --</option>
+                        <option value="HCl_37" data-mw="36.46" data-d="1.19" data-p="37" data-n="1">Hydrochloric Acid
+                            (HCl) - 37%, 1.19 g/mL, MA=36.46</option>
+                        <option value="HCl_32" data-mw="36.46" data-d="1.16" data-p="32" data-n="1">Hydrochloric Acid
+                            (HCl) - 32%, 1.16 g/mL, MA=36.46</option>
+
+                        <option value="H2SO4_98" data-mw="98.08" data-d="1.84" data-p="98" data-n="2">Sulfuric Acid
+                            (H2SO4) - 98%, 1.84 g/mL, MA=98.08</option>
+                        <option value="H2SO4_94" data-mw="98.08" data-d="1.83" data-p="94" data-n="2">Sulfuric Acid
+                            (H2SO4) - 94%, 1.83 g/mL, MA=98.08</option>
+
+                        <option value="HNO3_69" data-mw="63.01" data-d="1.42" data-p="69" data-n="1">Nitric Acid (HNO3)
+                            - 69%, 1.42 g/mL, MA=63.01</option>
+                        <option value="HNO3_65" data-mw="63.01" data-d="1.40" data-p="65" data-n="1">Nitric Acid (HNO3)
+                            - 65%, 1.40 g/mL, MA=63.01</option>
+
+                        <option value="CH3COOH_Glacial" data-mw="60.05" data-d="1.05" data-p="99.5" data-n="1">Glacial
+                            Acetic Acid (CH3COOH) - 99.5%, 1.05 g/mL, MA=60.05</option>
+                        <option value="CH3COOH_96" data-mw="60.05" data-d="1.06" data-p="96" data-n="1">Acetic Acid
+                            (CH3COOH) - 96%, 1.06 g/mL, MA=60.05</option>
+
+                        <option value="H3PO4_85" data-mw="98.00" data-d="1.685" data-p="85" data-n="3">Phosphoric Acid
+                            (H3PO4) - 85%, 1.685 g/mL, MA=98.00</option>
+
+                        <option value="HClO4_70" data-mw="100.46" data-d="1.67" data-p="70" data-n="1">Perchloric Acid
+                            (HClO4) - 70%, 1.67 g/mL, MA=100.46</option>
+                        <option value="HClO4_60" data-mw="100.46" data-d="1.53" data-p="60" data-n="1">Perchloric Acid
+                            (HClO4) - 60%, 1.53 g/mL, MA=100.46</option>
+
+                        <option value="HF" data-mw="20.01" data-d="1.15" data-p="48" data-n="1">Hydrofluoric Acid (HF) -
+                            48%, 1.15 g/mL, MA=20.01</option>
+
+                        <option value="NH3_28" data-mw="17.03" data-d="0.90" data-p="28" data-n="1">Ammonia Solution
+                            (NH4OH) - 28%, 0.90 g/mL, MA=17.03</option>
+                        <option value="NH3_25" data-mw="17.03" data-d="0.91" data-p="25" data-n="1">Ammonia Solution
+                            (NH4OH) - 25%, 0.91 g/mL, MA=17.03</option>
+
+                        <option value="H2O2_30" data-mw="34.01" data-d="1.11" data-p="30" data-n="2">Hydrogen Peroxide
+                            (H2O2) - 30%, 1.11 g/mL, MA=34.01</option>
+                        <option value="H2O2_50" data-mw="34.01" data-d="1.20" data-p="50" data-n="2">Hydrogen Peroxide
+                            (H2O2) - 50%, 1.20 g/mL, MA=34.01</option>
+                    </select>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Assay / Purity (% w/w)</label>
+                        <input type="number" step="any" id="concPurity" placeholder="e.g., 98">
+                    </div>
+                    <div class="form-group">
+                        <label>Density / Specific Gravity (g/mL)</label>
+                        <input type="number" step="any" id="concDensity" placeholder="e.g., 1.84">
+                    </div>
+                    <div class="form-group">
+                        <label>Molar Mass (MA) (g/mol)</label>
+                        <input type="number" step="any" id="concMW" placeholder="e.g., 98.08">
+                    </div>
+                </div>
+
+                <hr style="border:0; border-top:1px dashed #cbd5e1; margin: 5px 0 15px 0;">
+
+                <div class="unit-toggle">
+                    <input type="radio" id="concUnitM" name="concUnit" value="M" checked onchange="toggleConcEq(false)">
+                    <label for="concUnitM">Molarity (M)</label>
+                    <input type="radio" id="concUnitN" name="concUnit" value="N" onchange="toggleConcEq(true)">
+                    <label for="concUnitN">Normality (N) - Titrations</label>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label id="concTargetMLabel">Desired Target Molarity (M₂)</label>
+                        <input type="number" step="any" id="concTargetM" placeholder="e.g., 0.1">
+                    </div>
+                    <div class="form-group" id="concEqGroup" style="display:none;">
+                        <label>Equivalence Factor (n)</label>
+                        <input type="number" step="any" id="concEq" value="1" placeholder="e.g., 2 for H2SO4">
+                    </div>
+                    <div class="form-group">
+                        <label>Desired Final Volume (V₂ - mL)</label>
+                        <input type="number" step="any" id="concTargetV" placeholder="e.g., 500">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcConcLiquid()">Calculate Volume</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('concLiquidForm', 'concLiquidResult'); document.getElementById('concInfoMsg').style.display='none';">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="concLiquidResult"></div>
+        </div>
+
+        <!-- 3. Dilution -->
+        <div id="dilution" class="tab-content">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> You already have a prepared Stock Solution (e.g., 2 M NaOH) and need to
+                    dilute it to a weaker target concentration (e.g., 0.1 M). This applies the universal
+                    <code>M₁V₁ = M₂V₂</code> (or <code>N₁V₁ = N₂V₂</code>) formula.
+                </div>
+            </div>
+            <form id="dilutionForm">
+                <div class="info-panel">Dilutes any solution formula (M₁V₁ = M₂V₂ or N₁V₁ = N₂V₂). Using M or N behaves
+                    identically.</div>
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Stock Concentration (M₁/N₁)</label>
+                        <input type="number" step="any" id="dilM1" placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label>Desired Target Concentration (M₂/N₂)</label>
+                        <input type="number" step="any" id="dilM2" placeholder="e.g., 0.25">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Desired Final Volume (V₂ - mL)</label>
+                    <input type="number" step="any" id="dilV2" placeholder="e.g., 500">
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcDilution()">Calculate V1</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('dilutionForm', 'dilutionResult')">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="dilutionResult"></div>
+        </div>
+
+        <!-- 4. Find Molarity -->
+        <div id="calc-molarity" class="tab-content">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> You've already weighed a random/specific amount of solid and dissolved it
+                    into a final volume, and you need to reverse-calculate what the resulting Molarity (and Normality)
+                    is.
+                </div>
+            </div>
+            <form id="findMForm">
+                <div class="info-panel">Find Molarity (and Normality) backwards when dissolving a known mass in a final
+                    volume.</div>
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Mass Weighed (g)</label>
+                        <input type="number" step="any" id="fmMass" placeholder="e.g., 8">
+                    </div>
+                    <div class="form-group">
+                        <label>Molar Mass (MA) (g/mol)</label>
+                        <input type="number" step="any" id="fmMW" placeholder="e.g., 40">
+                    </div>
+                    <div class="form-group">
+                        <label>Final Volume (mL)</label>
+                        <input type="number" step="any" id="fmVol" placeholder="e.g., 500">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Equivalence Factor (n) [Optional, for Normality]</label>
+                    <input type="number" step="any" id="fmN"
+                        placeholder="Leave empty if not doing titrations. e.g. 2 for H2SO4">
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcFindM()">Calculate Concentration</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('findMForm', 'findMResult')">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="findMResult"></div>
+        </div>
+
+        <!-- 5. % w/v & % v/v -->
+        <div id="percentage" class="tab-content">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> You need percentage-based solutions rather than Molarity. <br />
+                    • <b>% w/v</b>: Weight/Volume. Used when dissolving solids (e.g., 5% NaCl means 5g of NaCl per 100mL
+                    of total solution). <br />
+                    • <b>% v/v</b>: Volume/Volume. Used when mixing two liquids (e.g., 70% Ethanol means 70mL of Ethanol
+                    diluted to a total volume of 100mL).
+                </div>
+            </div>
+            <form id="percForm">
+                <div class="form-group">
+                    <label>Select Type</label>
+                    <select id="percType">
+                        <option value="wv">% w/v (Weight/Volume - Solid to Liquid)</option>
+                        <option value="vv">% v/v (Volume/Volume - Liquid to Liquid)</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Desired Percentage (%)</label>
+                        <input type="number" step="any" id="percVal" placeholder="e.g., 5">
+                    </div>
+                    <div class="form-group">
+                        <label>Desired Final Volume (mL)</label>
+                        <input type="number" step="any" id="percVol" placeholder="e.g., 100">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcPerc()">Calculate Amount</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('percForm', 'percResult')">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="percResult"></div>
+        </div>
+
+        <!-- 6. ppm / ppb -->
+        <div id="ppm" class="tab-content">
+            <div class="info-panel-wrap">
+                <button class="info-btn" onclick="toggleInfo(this)">
+                    <span>ℹ️ About this calculation</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="info-content">
+                    <strong>Use when:</strong> Preparing extreme trace-level concentrations often used in analytical
+                    machines (like AAS, ICP). <br />
+                    • <b>ppm</b> (parts per million) is equivalent to 1 mg/L.<br />
+                    • <b>ppb</b> (parts per billion) is equivalent to 1 μg/L. <br />
+                    <i>Note: Directly preparing ppb from a solid is often impossible due to balance limits; you may be
+                        advised to prepare a 1000 ppm stock and serially dilute it.</i>
+                </div>
+            </div>
+            <form id="ppmForm">
+                <div class="form-group">
+                    <label>Unit</label>
+                    <select id="ppmUnit">
+                        <option value="ppm">ppm (Parts Per Million) [1 mg/L]</option>
+                        <option value="ppb">ppb (Parts Per Billion) [1 µg/L]</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Desired Concentration</label>
+                        <input type="number" step="any" id="ppmVal" placeholder="e.g., 100">
+                    </div>
+                    <div class="form-group">
+                        <label>Final Volume (mL)</label>
+                        <input type="number" step="any" id="ppmVol" placeholder="e.g., 1000">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="calcPPM()">Calculate Mass</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetForm('ppmForm', 'ppmResult')">Clear</button>
+                </div>
+            </form>
+            <div class="result-box" id="ppmResult"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // System Utlities
+        function toggleInfo(btn) {
+            btn.classList.toggle("active");
+            let content = btn.nextElementSibling;
+            if (content.classList.contains("show")) {
+                content.classList.remove("show");
+            } else {
+                content.classList.add("show");
+            }
+        }
+
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function resetForm(formId, resultId) {
+            document.getElementById(formId).reset();
+            let box = document.getElementById(resultId);
+            box.style.display = 'none';
+            box.innerHTML = '';
+            box.style.animation = 'none';
+            box.offsetHeight;
+            box.style.animation = null;
+        }
+
+        function v(inputs) {
+            for (let val of inputs) if (isNaN(val) || val <= 0) return false;
+            return true;
+        }
+
+        // Toggle Handlers
+        function toggleSolidEq(isN) {
+            document.getElementById('solidEqGroup').style.display = isN ? 'block' : 'none';
+            document.getElementById('molarSolidConcLabel').innerText = isN ? 'Desired Normality (N)' : 'Desired Molarity (M)';
+        }
+
+        function toggleConcEq(isN) {
+            document.getElementById('concEqGroup').style.display = isN ? 'block' : 'none';
+            document.getElementById('concTargetMLabel').innerText = isN ? 'Desired Target Normality (N₂)' : 'Desired Target Molarity (M₂)';
+            autoCalcConc();
+        }
+
+        // Tab 1 Logic 
+        document.getElementById('molarSolidChemical').addEventListener('change', function () {
+            document.getElementById('molarSolidMW').value = this.options[this.selectedIndex].getAttribute('data-mw') || "";
+        });
+
+        function calcMolarSolid() {
+            let mw = parseFloat(document.getElementById('molarSolidMW').value);
+            let m_or_n = parseFloat(document.getElementById('molarSolidConc').value);
+            let vol = parseFloat(document.getElementById('molarSolidVol').value);
+            let isN = document.getElementById('solidUnitN').checked;
+            let eq = isN ? parseFloat(document.getElementById('molarSolidEq').value) : 1;
+
+            if (!v([mw, m_or_n, vol, eq])) return alert("Please enter valid, positive numbers for all fields.");
+
+            let targetM = isN ? (m_or_n / eq) : m_or_n;
+            let mass = targetM * mw * (vol / 1000);
+
+            let unitText = isN ? `${m_or_n} N` : `${m_or_n} M`;
+
+            let html = `
+            <h3>Result & Procedure</h3>
+            <p>Preparation of <span class="highlight">${unitText}</span> Solution.</p>
+            <p>Required Solid Mass: <span class="highlight">${mass.toFixed(4)} g</span></p>
+            <p style="font-size:0.85rem; color: #64748B;"><i>Under the hood math: EW = ${(mw / eq).toFixed(2)}, Target Molarity = ${targetM.toFixed(4)} M</i></p>
+            <ol class="procedure-list">
+                <li>Weigh exactly <b>${mass.toFixed(4)} g</b> of the chemical on an analytical balance.</li>
+                <li>Transfer carefully to a beaker and add a small amount of distilled water (e.g. ${vol / 2} mL).</li>
+                <li>Stir until completely dissolved.</li>
+                <li>Transfer the solution to a <b>${vol} mL</b> volumetric flask. Wash the beaker with distilled water and add washings to the flask.</li>
+                <li>Dilute to the graduation mark with distilled water. Stopper and invert several times to mix.</li>
+            </ol>
+        `;
+            let res = document.getElementById('molarSolidResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+        // Tab 2 Logic
+        function autoCalcConc() {
+            let p = parseFloat(document.getElementById('concPurity').value);
+            let d = parseFloat(document.getElementById('concDensity').value);
+            let mw = parseFloat(document.getElementById('concMW').value);
+
+            let isN = document.getElementById('concUnitN').checked;
+            let eq = parseFloat(document.getElementById('concEq').value) || 1;
+
+            let box = document.getElementById('concInfoMsg');
+            let txtM = document.getElementById('concLiveStockM');
+            let txtN = document.getElementById('concLiveStockN');
+
+            if (v([p, d, mw])) {
+                let stockM = (p * d * 10) / mw;
+                txtM.innerText = stockM.toFixed(4) + " M";
+
+                if (isN && eq > 0) {
+                    txtN.innerText = " | " + (stockM * eq).toFixed(4) + " N";
+                    txtN.style.display = 'inline';
+                } else {
+                    txtN.style.display = 'none';
+                }
+
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        }
+        document.getElementById('concPurity').addEventListener('input', autoCalcConc);
+        document.getElementById('concDensity').addEventListener('input', autoCalcConc);
+        document.getElementById('concMW').addEventListener('input', autoCalcConc);
+        document.getElementById('concEq').addEventListener('input', autoCalcConc);
+
+        document.getElementById('concLiquidChemical').addEventListener('change', function () {
+            let opt = this.options[this.selectedIndex];
+            document.getElementById('concPurity').value = opt.getAttribute('data-p') || "";
+            document.getElementById('concDensity').value = opt.getAttribute('data-d') || "";
+            document.getElementById('concMW').value = opt.getAttribute('data-mw') || "";
+
+            let nFactor = opt.getAttribute('data-n') || "";
+            if (nFactor) document.getElementById('concEq').value = nFactor;
+
+            autoCalcConc();
+        });
+
+        function calcConcLiquid() {
+            let p = parseFloat(document.getElementById('concPurity').value);
+            let d = parseFloat(document.getElementById('concDensity').value);
+            let mw = parseFloat(document.getElementById('concMW').value);
+            let targetConc = parseFloat(document.getElementById('concTargetM').value);
+            let v2 = parseFloat(document.getElementById('concTargetV').value);
+            let isN = document.getElementById('concUnitN').checked;
+            let eq = isN ? parseFloat(document.getElementById('concEq').value) : 1;
+
+            if (!v([p, d, mw, targetConc, v2, eq])) return alert("Please enter valid, positive numbers.");
+
+            // Calculate Stock Molarity
+            let stockM = (p * d * 10) / mw;
+            let actualTargetM = isN ? (targetConc / eq) : targetConc;
+
+            let stockUsedUnit = isN ? (stockM * eq).toFixed(4) + " N" : stockM.toFixed(4) + " M";
+            let targetUsedUnit = isN ? targetConc + " N" : targetConc + " M";
+
+            if (actualTargetM > stockM) return alert(`Target concentration is too high. The Concentrated Stock is only ${stockM.toFixed(2)} M.`);
+
+            // M1V1 = M2V2
+            let v1 = (actualTargetM * v2) / stockM;
+
+            let html = `
+            <h3>Result & Procedure</h3>
+            <p>Concentration of Stock: <span class="highlight">${stockUsedUnit}</span></p>
+            <p>Volume of Stock to Take: <span class="highlight">${v1.toFixed(3)} mL</span></p>
+            <ol class="procedure-list">
+                <li>Working under a fume hood, put some distilled water (e.g., ${v2 / 3} mL) into a <b>${v2} mL</b> volumetric flask. <i>(ALWAYS add strong acids to water, not water to acid!)</i></li>
+                <li>Pipette exactly <b>${v1.toFixed(3)} mL</b> of the concentrated stock solution into the flask slowly.</li>
+                <li>Swirl gently to mix. Let it cool to room temperature if the reaction is highly exothermic.</li>
+                <li>Dilute to the <b>${v2} mL</b> mark with distilled water. Stopper and mix.</li>
+            </ol>
+        `;
+            let res = document.getElementById('concLiquidResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+        // Tab 3 Logic (Dilution)
+        function calcDilution() {
+            let m1 = parseFloat(document.getElementById('dilM1').value);
+            let m2 = parseFloat(document.getElementById('dilM2').value);
+            let v2 = parseFloat(document.getElementById('dilV2').value);
+
+            if (!v([m1, m2, v2])) return alert("Please enter valid numbers.");
+            if (m2 >= m1) return alert("Stock Concentration (M₁/N₁) must be greater than Target Concentration (M₂/N₂).");
+
+            let v1 = (m2 * v2) / m1;
+
+            let html = `
+            <h3>Result & Procedure</h3>
+            <p>Volume of Stock (V₁) needed: <span class="highlight">${v1.toFixed(3)} mL</span></p>
+            <ol class="procedure-list">
+                <li>Measure exactly <b>${v1.toFixed(3)} mL</b> of the ${m1} stock solution.</li>
+                <li>Transfer to a <b>${v2} mL</b> volumetric flask containing a small amount of distilled water.</li>
+                <li>Fill the flask to the graduation mark with distilled water.</li>
+            </ol>
+        `;
+            let res = document.getElementById('dilutionResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+        // Tab 4 Logic (Find Molarity/Normality)
+        function calcFindM() {
+            let mass = parseFloat(document.getElementById('fmMass').value);
+            let mw = parseFloat(document.getElementById('fmMW').value);
+            let vol = parseFloat(document.getElementById('fmVol').value);
+            let eqStr = document.getElementById('fmN').value;
+
+            let eq = eqStr ? parseFloat(eqStr) : 0;
+
+            if (!v([mass, mw, vol])) return alert("Please enter valid numbers for mass, MW, and volume.");
+
+            // Moles and Molarity
+            let m = (mass / mw) / (vol / 1000);
+
+            let normOutput = "";
+            if (eq > 0) {
+                normOutput = `<br/>Normality (N): <span class="highlight">${(m * eq).toFixed(4)} N</span>`;
+            }
+
+            let html = `
+            <h3>Calculation Result</h3>
+            <p>Molarity (M): <span class="highlight">${m.toFixed(4)} M</span>${normOutput}</p>
+            <p style="margin-top:8px; font-size:0.9rem; color:var(--text-muted)">
+                <i>Math used: Moles = ${mass}g / ${mw}g/mol = ${(mass / mw).toFixed(4)} moles.<br/> Volume = ${vol}mL / 1000 = ${(vol / 1000).toFixed(4)} Liters.<br/> Molarity = Moles / Liters.</i>
+            </p>
+        `;
+            let res = document.getElementById('findMResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+        // Tab 5 Logic (% w/v & % v/v)
+        function calcPerc() {
+            let type = document.getElementById('percType').value;
+            let per = parseFloat(document.getElementById('percVal').value);
+            let vol = parseFloat(document.getElementById('percVol').value);
+
+            if (!v([per, vol])) return alert("Please enter valid positive numbers.");
+            if (type === 'vv' && per >= 100) return alert("Percentage must be less than 100.");
+
+            let amt = (per * vol) / 100;
+            let html = "";
+
+            if (type === 'wv') {
+                html = `
+                <h3>Result & Procedure (% w/v)</h3>
+                <p>Required Mass: <span class="highlight">${amt.toFixed(3)} g</span></p>
+                <ol class="procedure-list">
+                    <li>Weigh <b>${amt.toFixed(3)} g</b> of the solute.</li>
+                    <li>Transfer to a volumetric flask or measuring cylinder.</li>
+                    <li>Add distilled water up to the <b>${vol} mL</b> mark and mix.</li>
+                </ol>
+            `;
+            } else {
+                html = `
+                <h3>Result & Procedure (% v/v)</h3>
+                <p>Required Solute Volume: <span class="highlight">${amt.toFixed(3)} mL</span></p>
+                <ol class="procedure-list">
+                    <li>Measure exactly <b>${amt.toFixed(3)} mL</b> of the solute liquid.</li>
+                    <li>Pour it into a <b>${vol} mL</b> measuring cylinder or volumetric flask.</li>
+                    <li>Dilute with solvent to exactly the <b>${vol} mL</b> mark and mix.</li>
+                </ol>
+            `;
+            }
+            let res = document.getElementById('percResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+        // Tab 6 Logic (ppm / ppb)
+        function calcPPM() {
+            let val = parseFloat(document.getElementById('ppmVal').value);
+            let vol = parseFloat(document.getElementById('ppmVol').value);
+            let unit = document.getElementById('ppmUnit').value;
+
+            if (!v([val, vol])) return alert("Please enter valid positive numbers.");
+
+            // ppm = mg/L. ppb = ug/L
+            let massMg = 0;
+            let isTiny = false;
+
+            if (unit === 'ppm') {
+                massMg = val * (vol / 1000); // Need this much mg
+            } else {
+                massMg = (val / 1000) * (vol / 1000); // 1 ppb = 0.001 ppm
+                isTiny = true;
+            }
+
+            let formattedMass = "";
+            let note = "";
+
+            if (massMg < 1) {
+                formattedMass = (massMg * 1000).toFixed(2) + " µg (micrograms)";
+                note = "<i>Note: Since this mass is too tiny to weigh accurately directly, you MUST use a <b>Serial Dilution</b> method from a concentrated stock (e.g. 1000 ppm standard).</i>";
+            } else if (massMg > 1000) {
+                formattedMass = (massMg / 1000).toFixed(4) + " g (grams)";
+            } else {
+                formattedMass = massMg.toFixed(2) + " mg (milligrams)";
+            }
+
+            let html = `
+            <h3>Result & Procedure</h3>
+            <p>Required Solute Mass: <span class="highlight">${formattedMass}</span></p>
+            <p>${note}</p>
+            <ol class="procedure-list">
+                <li>Weigh the specified mass accurately using a highly sensitive balance.</li>
+                <li>Dissolve it in a small amount of solvent.</li>
+                <li>Transfer quantitatively to a <b>${vol} mL</b> volumetric flask.</li>
+                <li>Make up to the mark with solvent and mix well.</li>
+            </ol>
+        `;
+            let res = document.getElementById('ppmResult');
+            res.innerHTML = html; res.style.display = 'block';
+        }
+
+    </script>
+
+</body>
+
+</html>
